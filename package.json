@@ -1,0 +1,19 @@
+{
+  "name": "public-service-ai-observatory",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs",
+    "preview": "node scripts/preview.mjs"
+  },
+  "dependencies": {
+    "marked": "15.0.12"
+  },
+  "devDependencies": {
+    "linkedom": "0.18.12"
+  }
+}
