@@ -188,6 +188,75 @@ if (!watch.includes("https://www.youtube.com/playlist?list=PLQOp9gIlLxSc")) {
 }
 if (!/coming soon/i.test(watch)) fail("Watch page does not say the series is coming soon");
 
+const compendiumData = JSON.parse(
+  fs.readFileSync(path.join(root, "content/compendium/editions.json"), "utf8"),
+);
+const compendiumHtml = fs.readFileSync(path.join(dist, "weekly-compendium/index.html"), "utf8");
+const compendiumMain = compendiumHtml.split("<main")[1]?.split("</main>")[0] || "";
+const homeHtml = fs.readFileSync(path.join(dist, "index.html"), "utf8");
+
+function formatMb(bytes) {
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+if (/\b(Benedict|Itegbe)\b/.test(compendiumMain)) {
+  fail("Weekly compendium main text includes a personal name");
+}
+if (/<iframe\b/i.test(compendiumHtml) || /<iframe\b/i.test(watch) || /<iframe\b/i.test(homeHtml)) {
+  fail("A page embeds an iframe before a click");
+}
+if (/[?&]autoplay=1/i.test(compendiumHtml) || /[?&]autoplay=1/i.test(watch)) {
+  fail("A compendium or watch player requests autoplay");
+}
+for (const phrase of [
+  compendiumData.series.playlistUrl,
+  compendiumData.series.channelUrl,
+  "Watch the series on OraquulTV",
+  "youtube-nocookie.com/embed/videoseries?list=PLO7fT7tA_VKs",
+  "Views are personal and are not official positions",
+]) {
+  if (!compendiumHtml.includes(phrase)) fail(`Weekly compendium is missing: ${phrase}`);
+  if (!watch.includes(phrase)) fail(`Watch page is missing: ${phrase}`);
+  if (!homeHtml.includes(phrase) && phrase !== "Views are personal and are not official positions") {
+    fail(`Home page is missing: ${phrase}`);
+  }
+}
+if (!watch.includes("Weekly Audio Overviews")) {
+  fail("Watch page is missing the Weekly Audio Overviews section");
+}
+if (!homeHtml.includes('href="./weekly-compendium/"')) {
+  fail("Home page is missing the weekly compendium link");
+}
+if (!watch.includes("AI in Public Service")) {
+  fail("Watch page lost the AI in Public Service series");
+}
+
+const editionsByDate = [...compendiumData.editions].sort((a, b) => (a.date < b.date ? 1 : -1));
+for (const edition of compendiumData.editions) {
+  const pdfPath = path.join(dist, "assets/compendium", edition.pdf);
+  if (!fs.existsSync(pdfPath)) fail(`Missing published PDF ${edition.pdf}`);
+  if (!compendiumHtml.includes(edition.pdf)) fail(`Weekly compendium does not link ${edition.pdf}`);
+  if (!compendiumHtml.includes(edition.theme)) fail(`Weekly compendium is missing the theme for ${edition.date}`);
+  if (!compendiumHtml.includes(formatMb(fs.statSync(pdfPath).size))) {
+    fail(`Weekly compendium is missing the file size for ${edition.pdf}`);
+  }
+  if (!compendiumHtml.includes('target="_blank"')) {
+    fail("Weekly compendium PDF links do not open in a new tab");
+  }
+}
+const withAudio = editionsByDate.filter((edition) => edition.audio);
+if (withAudio.length < 2) fail("Expected audio episodes in the compendium data");
+for (const edition of withAudio) {
+  for (const phrase of [edition.audio.title, edition.audio.duration, edition.audio.youtubeId, "Watch on OraquulTV", "hqdefault.jpg"]) {
+    if (!compendiumHtml.includes(phrase)) fail(`Weekly compendium episode is missing ${phrase}`);
+    if (!watch.includes(phrase)) fail(`Watch episode is missing ${phrase}`);
+  }
+}
+const latestAudio = withAudio[0];
+for (const phrase of [latestAudio.audio.title, latestAudio.audio.duration, "Load the episode"]) {
+  if (!homeHtml.includes(phrase)) fail(`Home latest video is missing ${phrase}`);
+}
+
 const about = fs.readFileSync(path.join(dist, "about/index.html"), "utf8");
 if (!about.includes("Aig-Imoukhuede Foundation")) {
   fail("About page is missing the foundation disclaimer");

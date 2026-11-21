@@ -102,13 +102,18 @@
     }
   }
 
-  document.querySelectorAll("[data-load-youtube]").forEach(function (button) {
-    button.addEventListener("click", function () {
-      var panel = button.closest("[data-video-panel]");
+  document.querySelectorAll("[data-load-youtube]").forEach(function (control) {
+    control.addEventListener("click", function (event) {
+      var panel = control.closest("[data-video-panel]");
       if (!panel) return;
+      var isLink = control.tagName === "A";
+      if (isLink && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)) {
+        return;
+      }
+      if (isLink) event.preventDefault();
       var frame = document.createElement("iframe");
-      frame.src = button.getAttribute("data-load-youtube");
-      frame.title = button.getAttribute("data-frame-title") || "YouTube playlist";
+      frame.src = control.getAttribute("data-load-youtube");
+      frame.title = control.getAttribute("data-frame-title") || "YouTube video";
       frame.allowFullscreen = true;
       frame.setAttribute("allow", "fullscreen; picture-in-picture");
       frame.className = "video-frame";

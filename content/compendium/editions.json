@@ -1,0 +1,75 @@
+{
+  "series": {
+    "name": "Audio Overviews",
+    "publisher": "OraquulTV",
+    "summary": "Weekly audio reviews of the posts compendiums.",
+    "playlistId": "PLO7fT7tA_VKs",
+    "playlistUrl": "https://www.youtube.com/playlist?list=PLO7fT7tA_VKs",
+    "channelUrl": "https://www.youtube.com/@oraquultv"
+  },
+  "editions": [
+    {
+      "date": "2026-11-21",
+      "week": "2026-W47",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "Digital and AI tools should reach traders and farmers on the channels they already use, while people remain responsible for legal or high-stakes decisions.",
+      "pdf": "posts-compendium-2026-11-21.pdf",
+      "audio": {
+        "title": "AI on the Border, the Farm and the Phone",
+        "youtubeId": "RNiFlqA2-CQ",
+        "url": "https://youtu.be/RNiFlqA2-CQ",
+        "date": "2026-11-21",
+        "duration": "10:27"
+      }
+    },
+    {
+      "date": "2026-11-15",
+      "week": "2026-W46",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "AI and digital systems should recommend or prepare while accountable people verify or decide.",
+      "pdf": "posts-compendium-2026-11-15.pdf",
+      "audio": {
+        "title": "How AI Powers African Border Trade",
+        "youtubeId": "mNMOQRemYvQ",
+        "url": "https://youtu.be/mNMOQRemYvQ",
+        "date": "2026-11-15",
+        "duration": "23:15"
+      }
+    },
+    {
+      "date": "2026-11-08",
+      "week": "2026-W45",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "Where control should sit when AI and digital systems handle money, data and compliance.",
+      "pdf": "posts-compendium-2026-11-08.pdf"
+    },
+    {
+      "date": "2026-11-01",
+      "week": "2026-W44",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "AI and digital trade depend on trusted, linked records before they depend on technology.",
+      "pdf": "posts-compendium-2026-11-01.pdf"
+    },
+    {
+      "date": "2026-10-25",
+      "week": "2026-W43",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "From verification and evidence to the plumbing of trade, and to the politics of rules written outside Africa.",
+      "pdf": "posts-compendium-2026-10-25.pdf"
+    },
+    {
+      "date": "2026-10-18",
+      "week": "2026-W42",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "From principle to evidence of practice elsewhere: national traceability, cocoa finance tied to EUDR compliance, ministries organising around AI, and AI that flags but does not decide.",
+      "pdf": "posts-compendium-2026-10-18.pdf"
+    },
+    {
+      "date": "2026-10-16",
+      "week": "2026-W42",
+      "title": "Posts Compendium for Weekly Audio Review",
+      "theme": "Themes named in this edition: AI for Africa and the public sector; AfCFTA, trade facilitation and digital trade rails; export readiness, SMEs and market access; cocoa, EUDR and traceability; AI oracles and the Abundance thesis; energy and industrial competitiveness; leadership, project governance and professional networks.",
+      "pdf": "posts-compendium-2026-10-16.pdf"
+    }
+  ]
+}

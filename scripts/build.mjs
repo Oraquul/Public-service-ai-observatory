@@ -20,6 +20,12 @@ import {
   words,
 } from "./lib.mjs";
 import { contactForm, joinForm, newsletterForm } from "./forms.mjs";
+import {
+  audioOverviewsHtml,
+  compendiumBody,
+  homeVideoExtras,
+  loadCompendium,
+} from "./compendium.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -258,7 +264,17 @@ function library(items, fromUrl, level = 3) {
   </div>`;
 }
 
-function renderHome(cases, tools) {
+function copyTree(from, to) {
+  fs.mkdirSync(to, { recursive: true });
+  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
+    const source = path.join(from, entry.name);
+    const target = path.join(to, entry.name);
+    if (entry.isDirectory()) copyTree(source, target);
+    else fs.copyFileSync(source, target);
+  }
+}
+
+function renderHome(cases, tools, compendium) {
   const featured = cases[0];
   const tool = tools.find((item) => item.slug === "six-questions") || tools[0];
   const pillarItems = PILLARS.map(
@@ -362,6 +378,7 @@ function renderHome(cases, tools) {
     <section class="band" aria-labelledby="video-heading">
       <h2 id="video-heading">Latest video</h2>
       <p>The <a href="https://www.youtube.com/playlist?list=PLQOp9gIlLxSc">AI Africa Observatory playlist</a> is available on YouTube. The video series <em>AI in Public Service with Benedict Itegbe</em> is coming soon. Nothing plays until you choose to open it.</p>
+      ${homeVideoExtras(compendium, "")}
       <p><a class="button button-secondary" href="${relativeHref("", "watch/")}">Go to Watch</a></p>
     </section>
 
@@ -626,10 +643,18 @@ function renderDiaryEntry(entry) {
   );
 }
 
-function renderPage(item) {
+function renderPage(item, compendium) {
   const url = `${item.slug}/`;
   requireFields(item, ["title", "description"]);
   let inner = renderMarkdown(item.body, url);
+  if (item.slug === "watch") {
+    const block = audioOverviewsHtml(compendium, url);
+    const next = inner.replace(/<p>\s*\{\{audio-overviews\}\}\s*<\/p>/g, block);
+    if (next === inner || next.includes("{{audio-overviews}}")) {
+      throw new Error("Watch page is missing the audio-overviews slot");
+    }
+    inner = next;
+  }
   if (item.data.draft === "true") {
     const note =
       item.data.draftNote ||
@@ -704,12 +729,17 @@ function main() {
     path.join(root, "src/favicon.svg"),
     path.join(dist, "assets/favicon.svg"),
   );
+  copyTree(
+    path.join(root, "assets", "compendium"),
+    path.join(dist, "assets", "compendium"),
+  );
   fs.writeFileSync(path.join(dist, ".nojekyll"), "");
 
   const cases = prepare(loadDir(path.join(content, "cases")));
   const tools = prepare(loadDir(path.join(content, "tools")));
   const diary = prepare(loadDir(path.join(content, "diary")));
   const pages = loadDir(path.join(content, "pages"));
+  const compendium = loadCompendium(root);
 
   for (const item of [...cases, ...tools, ...diary, ...pages]) {
     if (/NEPC|Director-General|Executive Director|Chief Executive/i.test(item.data.author || "")) {
@@ -717,14 +747,25 @@ function main() {
     }
   }
 
-  renderHome(cases, tools);
+  renderHome(cases, tools, compendium);
   renderCases(cases);
   for (const item of cases) renderCase(item, cases);
   renderTools(tools);
   for (const tool of tools) renderTool(tool);
   renderDiaryIndex(diary);
   for (const entry of diary) renderDiaryEntry(entry);
-  for (const page of pages) renderPage(page);
+  for (const page of pages) renderPage(page, compendium);
+  writePage(
+    "weekly-compendium/",
+    layout({
+      url: "weekly-compendium/",
+      title: "Weekly compendium",
+      description:
+        "Public PDF copies of the weekly posts compendiums on public-service AI, with OraquulTV audio overviews where an episode exists.",
+      nav: "compendium",
+      body: compendiumBody(compendium),
+    }),
+  );
   renderNotFound();
 
   const expected = ["about", "methodology", "editorial-policy", "privacy", "accessibility", "disclosures", "corrections", "contact", "join", "watch"];
@@ -735,7 +776,7 @@ function main() {
   }
 
   console.log(
-    `Built ${cases.length} case(s), ${tools.length} tool(s), ${diary.length} diary note(s), ${pages.length} pages.`,
+    `Built ${cases.length} case(s), ${tools.length} tool(s), ${diary.length} diary note(s), ${pages.length} pages, ${compendium.editions.length} compendium edition(s).`,
   );
 }
 

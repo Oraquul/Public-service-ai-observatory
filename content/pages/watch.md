@@ -1,12 +1,18 @@
 ---
 title: Watch
-description: The AI Africa Observatory playlist, and the forthcoming series AI in Public Service with Benedict Itegbe.
+description: OraquulTV Audio Overviews, the AI Africa Observatory playlist, and the forthcoming series AI in Public Service with Benedict Itegbe.
 nav: watch
 ---
 
 # Watch
 
 Nothing on this page plays until you choose it. There is no autoplay.
+
+## Weekly Audio Overviews
+
+OraquulTV publishes an audio overview of the weekly posts compendium. These episodes are separate from the AI in Public Service series.
+
+{{audio-overviews}}
 
 ## AI Africa Observatory
 
