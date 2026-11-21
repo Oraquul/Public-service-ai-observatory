@@ -62,7 +62,7 @@ Leave out `audio` when that week has no OraquulTV episode. Leave out `week` only
 
 3. Run `npm run build` and `npm run check`.
 
-The playlist and channel addresses are the `series` object in the same file. Change them there if the OraquulTV address changes. An episode still image is YouTube’s thumbnail. The player loads only after a click, and it does not autoplay.
+The playlist and channel addresses are the `series` object in the same file. Change them there if the OraquulTV address changes. Each episode is a card drawn by the site. The YouTube player loads only after a click, and it does not autoplay.
 
 ## Publish on GitHub Pages
 

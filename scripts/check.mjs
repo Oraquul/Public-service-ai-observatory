@@ -247,10 +247,19 @@ for (const edition of compendiumData.editions) {
 const withAudio = editionsByDate.filter((edition) => edition.audio);
 if (withAudio.length < 2) fail("Expected audio episodes in the compendium data");
 for (const edition of withAudio) {
-  for (const phrase of [edition.audio.title, edition.audio.duration, edition.audio.youtubeId, "Watch on OraquulTV", "hqdefault.jpg"]) {
+  for (const phrase of [edition.audio.title, edition.audio.duration, edition.audio.youtubeId, "Watch on OraquulTV", "OraquulTV · Audio Overviews", "Load the episode"]) {
     if (!compendiumHtml.includes(phrase)) fail(`Weekly compendium episode is missing ${phrase}`);
     if (!watch.includes(phrase)) fail(`Watch episode is missing ${phrase}`);
   }
+}
+if (compendiumHtml.includes("i.ytimg.com") || watch.includes("i.ytimg.com") || homeHtml.includes("i.ytimg.com")) {
+  fail("A page loads a YouTube image before a click");
+}
+if (!compendiumHtml.includes("accent-teal") || !compendiumHtml.includes("accent-violet")) {
+  fail("Weekly compendium episodes do not use distinct accent colours");
+}
+if (!watch.includes("accent-teal") || !watch.includes("accent-violet")) {
+  fail("Watch episodes do not use distinct accent colours");
 }
 const latestAudio = withAudio[0];
 for (const phrase of [latestAudio.audio.title, latestAudio.audio.duration, "Load the episode"]) {

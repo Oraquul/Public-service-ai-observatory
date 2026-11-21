@@ -123,27 +123,38 @@ function episodeMeta(edition, audio) {
   return parts.join(" · ");
 }
 
-export function episodeCard(edition, headingLevel) {
+const ACCENTS = ["teal", "violet", "amber"];
+
+function accentFor(editions, edition) {
+  const index = editions
+    .filter((item) => item.audio)
+    .findIndex((item) => item.date === edition.date);
+  return ACCENTS[(index < 0 ? 0 : index) % ACCENTS.length];
+}
+
+export function episodeCard(edition, headingLevel, accent = "teal") {
   const audio = edition.audio;
   if (!audio) return "";
   const embed = `https://www.youtube-nocookie.com/embed/${audio.youtubeId}`;
-  const thumb = `https://i.ytimg.com/vi/${audio.youtubeId}/hqdefault.jpg`;
   const title = escapeHtml(audio.title);
+  const safeAccent = ACCENTS.includes(accent) ? accent : ACCENTS[0];
   return `<article class="episode-card">
     <div class="video-panel" data-video-panel>
-      <a class="video-facade" href="${escapeHtml(audio.url)}" target="_blank" rel="noopener noreferrer" data-load-youtube="${escapeHtml(embed)}" data-frame-title="${title} on OraquulTV">
-        <img src="${escapeHtml(thumb)}" alt="" width="480" height="270" loading="lazy" referrerpolicy="no-referrer">
-        <span class="video-facade-label">Load the episode<span class="visually-hidden">: ${title}</span></span>
+      <a class="video-facade episode-stage accent-${safeAccent}" href="${escapeHtml(audio.url)}" target="_blank" rel="noopener noreferrer" data-load-youtube="${escapeHtml(embed)}" data-frame-title="${title} on OraquulTV">
+        <span class="episode-label">OraquulTV · Audio Overviews</span>
+        <span class="episode-body">
+          <h${headingLevel} class="episode-title">${title}</h${headingLevel}>
+          <span class="episode-meta">${escapeHtml(episodeMeta(edition, audio))}</span>
+          <span class="episode-play">Load the episode</span>
+        </span>
       </a>
     </div>
-    <p class="video-note">The still image is served by YouTube. The player loads only after you choose it, and it does not play on its own.</p>
-    <h${headingLevel}>${title}</h${headingLevel}>
-    <p class="card-meta">${escapeHtml(episodeMeta(edition, audio))}</p>
+    <p class="video-note">The player loads only after you choose it, and it does not play on its own.</p>
     <p>${externalLink(audio.url, "Watch on OraquulTV")}</p>
   </article>`;
 }
 
-function editionArticle(edition, fromUrl) {
+function editionArticle(edition, fromUrl, editions) {
   const week = edition.week ? `${edition.week} · ` : "";
   const size = formatBytes(edition.bytes);
   const pdfHref = relativeHref(fromUrl, edition.pdfUrl);
@@ -153,13 +164,15 @@ function editionArticle(edition, fromUrl) {
     <h3>${escapeHtml(dateLabel)}</h3>
     <p>${escapeHtml(edition.theme)}</p>
     <p>${externalLink(pdfHref, `Open the PDF <span class="visually-hidden">for ${escapeHtml(dateLabel)} </span>(${size})`)}</p>
-    ${episodeCard(edition, 4)}
+    ${episodeCard(edition, 4, accentFor(editions, edition))}
   </article>`;
 }
 
 export function compendiumBody(compendium) {
   const fromUrl = "weekly-compendium/";
-  const editions = compendium.editions.map((edition) => editionArticle(edition, fromUrl)).join("");
+  const editions = compendium.editions
+    .map((edition) => editionArticle(edition, fromUrl, compendium.editions))
+    .join("");
   return `<article class="shell prose">
     <h1>Weekly compendium</h1>
     <p class="lede">Digests of posts and drafts on public-service AI, published here as public PDF copies. The newest edition is first.</p>
@@ -179,7 +192,7 @@ export function compendiumBody(compendium) {
 export function audioOverviewsHtml(compendium, fromUrl) {
   const episodes = compendium.editions
     .filter((edition) => edition.audio)
-    .map((edition) => episodeCard(edition, 3))
+    .map((edition) => episodeCard(edition, 3, accentFor(compendium.editions, edition)))
     .join("");
   const more = relativeHref(fromUrl, "weekly-compendium/");
   return `<div class="audio-overviews">
@@ -193,6 +206,6 @@ export function homeVideoExtras(compendium, fromUrl) {
   const latest = compendium.editions.find((edition) => edition.audio);
   const page = relativeHref(fromUrl, "weekly-compendium/");
   return `${seriesCard(compendium)}
-    ${latest ? episodeCard(latest, 3) : ""}
+    ${latest ? episodeCard(latest, 3, accentFor(compendium.editions, latest)) : ""}
     <p><a href="${page}">Weekly compendium</a></p>`;
 }
