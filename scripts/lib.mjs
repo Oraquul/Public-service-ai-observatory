@@ -68,6 +68,7 @@ export const NAV = [
   { href: "cases/", label: "Cases", key: "cases" },
   { href: "tools/", label: "Practical tools", key: "tools" },
   { href: "watch/", label: "Watch", key: "watch" },
+  { href: "weekly-compendium/", label: "Weekly compendium", key: "compendium" },
   { href: "diary/", label: "Research diary", key: "diary" },
   { href: "join/", label: "Join the Think Tank", key: "join" },
 ];

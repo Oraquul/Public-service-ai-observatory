@@ -32,7 +32,37 @@ npm run preview
 
 The founder’s byline is `Arc Benedict Itegbe, founder and editor`. Do not add an official title. Do not invent an impact figure, a partner logo or a testimonial. Label synthetic or proposed work as E0. The evidence labels are E0 Proposed, E1 Described, E2 Measured and E3 Replicated.
 
-Ordinary pages (About, Join, and the rest) live in `content/pages/`. The homepage, the case library and the diary index are assembled by `scripts/build.mjs`.
+Ordinary pages (About, Join, and the rest) live in `content/pages/`. The homepage, the case library, the diary index and the weekly compendium are assembled by `scripts/build.mjs`.
+
+## Add a weekly compendium edition
+
+The weekly compendium page, the Weekly Audio Overviews section on Watch, and the latest-video area on the homepage all read one file: `content/compendium/editions.json`. The build sorts editions newest first, so a new object can sit anywhere in the `editions` array.
+
+1. Copy the PDF to `assets/compendium/posts-compendium-YYYY-MM-DD.pdf`. The build publishes that folder at `assets/compendium/` on the site.
+2. Add one object to `editions`:
+
+```json
+{
+  "date": "YYYY-MM-DD",
+  "week": "YYYY-Www",
+  "title": "Posts Compendium for Weekly Audio Review",
+  "theme": "A short line taken from that edition.",
+  "pdf": "posts-compendium-YYYY-MM-DD.pdf",
+  "audio": {
+    "title": "Episode title",
+    "youtubeId": "xxxxxxxxxxx",
+    "url": "https://youtu.be/xxxxxxxxxxx",
+    "date": "YYYY-MM-DD",
+    "duration": "M:SS"
+  }
+}
+```
+
+Leave out `audio` when that week has no OraquulTV episode. Leave out `week` only when the PDF does not give a week label. Take `title` and `theme` from the edition. Do not add a personal name. The build rejects one.
+
+3. Run `npm run build` and `npm run check`.
+
+The playlist and channel addresses are the `series` object in the same file. Change them there if the OraquulTV address changes. Each episode is a card drawn by the site. The YouTube player loads only after a click, and it does not autoplay.
 
 ## Publish on GitHub Pages
 
